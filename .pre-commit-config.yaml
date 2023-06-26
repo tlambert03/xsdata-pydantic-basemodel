@@ -3,15 +3,7 @@ ci:
   autofix_commit_msg: "style(pre-commit.ci): auto fixes [...]"
   autoupdate_commit_msg: "ci(pre-commit.ci): autoupdate"
 
-default_install_hook_types: [pre-commit, commit-msg]
-
 repos:
-  # - repo: https://github.com/compilerla/conventional-pre-commit
-  #   rev: v2.1.1
-  #   hooks:
-  #     - id: conventional-pre-commit
-  #       stages: [commit-msg]
-
   - repo: https://github.com/charliermarsh/ruff-pre-commit
     rev: v0.0.252
     hooks:
@@ -33,6 +25,6 @@ repos:
     hooks:
       - id: mypy
         files: "^src/"
-        # # you have to add the things you want to type check against here
-        # additional_dependencies:
-        #   - numpy
+        additional_dependencies:
+          - pydantic
+          - xsdata

@@ -10,8 +10,7 @@ T = TypeVar("T", bound=object)
 
 
 class AnyElement(BaseModel):
-    """
-    Generic model to bind xml document data to wildcard fields.
+    """Generic model to bind xml document data to wildcard fields.
 
     :param qname: The element's qualified name
     :param text: The element's text content
@@ -35,8 +34,7 @@ class AnyElement(BaseModel):
 
 
 class DerivedElement(BaseModel, Generic[T]):
-    """
-    Generic model wrapper for type substituted elements.
+    """Generic model wrapper for type substituted elements.
 
     Example: eg. <b xsi:type="a">...</b>
 

@@ -1,6 +1,7 @@
 from decimal import Decimal
-from pydantic import Field, BaseModel
 from typing import List, Optional
+
+from pydantic import BaseModel, Field
 from xsdata.models.datatype import XmlDate
 
 __NAMESPACE__ = "foo"
@@ -12,9 +13,8 @@ class Items(BaseModel):
         metadata={
             "type": "Element",
             "namespace": "foo",
-        }
+        },
     )
-
 
     class Item(BaseModel):
         product_name: str = Field(
@@ -46,7 +46,7 @@ class Items(BaseModel):
             metadata={
                 "type": "Element",
                 "namespace": "foo",
-            }
+            },
         )
         ship_date: Optional[XmlDate] = Field(
             default=None,
@@ -54,7 +54,7 @@ class Items(BaseModel):
                 "name": "shipDate",
                 "type": "Element",
                 "namespace": "foo",
-            }
+            },
         )
         part_num: str = Field(
             metadata={
@@ -110,7 +110,7 @@ class Usaddress(BaseModel):
         default="US",
         metadata={
             "type": "Attribute",
-        }
+        },
     )
 
 
@@ -123,7 +123,7 @@ class Comment(BaseModel):
         default="",
         metadata={
             "required": True,
-        }
+        },
     )
 
 
@@ -149,7 +149,7 @@ class PurchaseOrderType(BaseModel):
         metadata={
             "type": "Element",
             "namespace": "foo",
-        }
+        },
     )
     items: Items = Field(
         metadata={
@@ -163,7 +163,7 @@ class PurchaseOrderType(BaseModel):
         metadata={
             "name": "orderDate",
             "type": "Attribute",
-        }
+        },
     )
 
 

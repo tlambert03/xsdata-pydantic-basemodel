@@ -6,7 +6,7 @@ from xsdata.utils.constants import return_input
 
 
 class XmlContext(context.XmlContext):
-    """Pydantic dataclasses ready xml context instance."""
+    """Pydantic BaseModel ready xml context instance."""
 
     def __init__(
         self,
