@@ -1,7 +1,5 @@
 from xsdata.formats.dataclass.compat import class_types
 
-from xsdata_pydantic.base_model.compat import PydanticBaseModel
-from xsdata_pydantic.compat import Pydantic
+from xsdata_pydantic_basemodel.compat import PydanticBaseModel
 
-class_types.register("pydantic", Pydantic())
-class_types.register("pydantic-base-model", PydanticBaseModel())
+class_types.register("pydantic-basemodel", PydanticBaseModel())

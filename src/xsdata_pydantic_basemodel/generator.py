@@ -3,9 +3,8 @@ from typing import Any, Dict, List
 from xsdata.codegen.models import Attr, Class
 from xsdata.formats.dataclass.filters import Filters
 from xsdata.formats.dataclass.generator import DataclassGenerator
-from xsdata.models.config import ExtensionType, GeneratorConfig, OutputFormat
+from xsdata.models.config import GeneratorConfig, OutputFormat
 from xsdata.utils.text import stop_words
-import collections
 
 stop_words.update(("schema", "validate"))
 
@@ -66,4 +65,4 @@ class PydanticBaseFilters(Filters):
 
     def class_bases(self, obj: Class, class_name: str) -> List[str]:
         # FIXME ... need to dedupe superclasses
-        return super().class_bases(obj, class_name) + ["BaseModel"]
+        return [*super().class_bases(obj, class_name), "BaseModel"]

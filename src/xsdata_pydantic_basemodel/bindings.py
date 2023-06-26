@@ -1,10 +1,7 @@
-from dataclasses import dataclass
-from dataclasses import field
+from dataclasses import dataclass, field
 from typing import Callable
 
-from xsdata.formats.dataclass import context
-from xsdata.formats.dataclass import parsers
-from xsdata.formats.dataclass import serializers
+from xsdata.formats.dataclass import context, parsers, serializers
 from xsdata.utils.constants import return_input
 
 
@@ -17,7 +14,7 @@ class XmlContext(context.XmlContext):
         attribute_name_generator: Callable = return_input,
     ):
         super().__init__(
-            element_name_generator, attribute_name_generator, "pydantic-base-model"
+            element_name_generator, attribute_name_generator, "pydantic-basemodel"
         )
 
 

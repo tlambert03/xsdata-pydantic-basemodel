@@ -1,7 +1,5 @@
 from xsdata.codegen.writer import CodeWriter
 
-from xsdata_pydantic.base_model.generator import PydanticBaseGenerator
-from xsdata_pydantic.generator import PydanticGenerator
+from xsdata_pydantic_basemodel.generator import PydanticBaseGenerator
 
-CodeWriter.register_generator("pydantic", PydanticGenerator)
-CodeWriter.register_generator("pydantic-base-model", PydanticBaseGenerator)
+CodeWriter.register_generator("pydantic-basemodel", PydanticBaseGenerator)

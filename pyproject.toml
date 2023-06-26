@@ -12,8 +12,11 @@ requires-python = ">=3.8"
 license = { text = "BSD 3-Clause License" }
 authors = [
     { email = "talley.lambert@gmail.com", name = "Talley Lambert" },
+    { email = "chris@komposta.net", name = "Christodoulos Tsoulloftas" },
+
 ]
 classifiers = [
+    "Intended Audience :: Developers",
     "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
@@ -22,15 +25,19 @@ classifiers = [
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: Text Processing :: Markup :: XML",
     "Typing :: Typed",
 ]
 dynamic = ["version"]
-dependencies = []
+dependencies = ['pydantic', 'xsdata>=22.9']
 
 # extras
 # https://peps.python.org/pep-0621/#dependencies-optional-dependencies
 [project.optional-dependencies]
-test = ["pytest>=6.0", "pytest-cov"]
+cli = ["xsdata[cli]>=22.4"]
+lxml = ["lxml>=4.4.1"]
+test = ["pytest>=6.0", "pytest-cov", "lxml", "xsdata[cli]>=22.4"]
 dev = [
     "black",
     "ipython",
@@ -53,16 +60,18 @@ repository = "https://github.com/tlambert03/xsdata-pydantic-basemodel"
 
 # Entry points
 # https://peps.python.org/pep-0621/#entry-points
-# [project.entry-points."spam.magical"]
-# tomatoes = "spam:main_tomatoes"
+[project.entry-points."xsdata.plugins.class_types"]
+xsdata_pydantic_basemodel = "xsdata_pydantic_basemodel.hooks.class_type"
+[project.entry-points."xsdata.plugins.cli"]
+xsdata_pydantic_basemodel = "xsdata_pydantic_basemodel.hooks.cli"
 
 # https://hatch.pypa.io/latest/config/metadata/
 [tool.hatch.version]
 source = "vcs"
 
 # https://hatch.pypa.io/latest/config/build/#file-selection
-# [tool.hatch.build.targets.sdist]
-# include = ["/src", "/tests"]
+[tool.hatch.build.targets.sdist]
+include = ["src", "tests"]
 
 [tool.hatch.build.targets.wheel]
 only-include = ["src"]
@@ -73,38 +82,21 @@ sources = ["src"]
 line-length = 88
 target-version = "py38"
 src = ["src"]
-# https://beta.ruff.rs/docs/rules/
 select = [
     "E",    # style errors
     "W",    # style warnings
     "F",    # flakes
-    "D",    # pydocstyle
     "I",    # isort
-    "UP",    # pyupgrade
-    "C4",    # flake8-comprehensions
+    "UP",   # pyupgrade
+    "C4",   # flake8-comprehensions
     "B",    # flake8-bugbear
     "A001", # flake8-builtins
     "RUF",  # ruff-specific rules
 ]
-# I do this to get numpy-style docstrings AND retain
-# D417 (Missing argument descriptions in the docstring)
-# otherwise, see:
-# https://beta.ruff.rs/docs/faq/#does-ruff-support-numpy-or-google-style-docstrings
-# https://github.com/charliermarsh/ruff/issues/2606
-ignore = [
-    "D100", # Missing docstring in public module
-    "D107", # Missing docstring in __init__
-    "D203", # 1 blank line required before class docstring
-    "D212", # Multi-line docstring summary should start at the first line
-    "D213", # Multi-line docstring summary should start at the second line
-    "D401", # First line should be in imperative mood
-    "D413", # Missing blank line after last section
-    "D416", # Section name should end with a colon
-]
+
 
 [tool.ruff.per-file-ignores]
-"tests/*.py" = ["D", "S"]
-"setup.py" = ["D"]
+"tests/*.py" = ["S"]
 
 # https://docs.pytest.org/en/6.2.x/customize.html
 [tool.pytest.ini_options]
@@ -121,11 +113,6 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 
-# # module specific overrides
-# [[tool.mypy.overrides]]
-# module = ["numpy.*",]
-# ignore_errors = true
-
 
 # https://coverage.readthedocs.io/en/6.4/config.html
 [tool.coverage.report]
@@ -137,6 +124,7 @@ exclude_lines = [
     "\\.\\.\\.",
     "raise NotImplementedError()",
 ]
+
 [tool.coverage.run]
 source = ["src"]
 
@@ -146,26 +134,5 @@ ignore = [
     ".github_changelog_generator",
     ".pre-commit-config.yaml",
     ".ruff_cache/**/*",
-    "setup.py",
     "tests/**/*",
 ]
-
-# https://python-semantic-release.readthedocs.io/en/latest/configuration.html
-[tool.semantic_release]
-version_source = "tag_only"
-branch = "main"
-changelog_sections = "feature,fix,breaking,documentation,performance,chore,:boom:,:sparkles:,:children_crossing:,:lipstick:,:iphone:,:egg:,:chart_with_upwards_trend:,:ambulance:,:lock:,:bug:,:zap:,:goal_net:,:alien:,:wheelchair:,:speech_balloon:,:mag:,:apple:,:penguin:,:checkered_flag:,:robot:,:green_apple:,Other"
-# commit_parser=semantic_release.history.angular_parser
-build_command = "pip install build && python -m build"
-
-# # for things that require compilation
-# # https://cibuildwheel.readthedocs.io/en/stable/options/
-# [tool.cibuildwheel]
-# # Skip 32-bit builds & PyPy wheels on all platforms
-# skip = ["*-manylinux_i686", "*-musllinux_i686", "*-win32", "pp*"]
-# test-extras = ["test"]
-# test-command = "pytest {project}/tests -v"
-# test-skip = "*-musllinux*"
-
-# [tool.cibuildwheel.environment]
-# HATCH_BUILD_HOOKS_ENABLE = "1"

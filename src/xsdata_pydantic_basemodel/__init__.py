@@ -1,4 +1,4 @@
-"""xsdata pydantic plugin using BaseModel"""
+"""xsdata pydantic plugin using BaseModel."""
 from importlib.metadata import PackageNotFoundError, version
 
 try:

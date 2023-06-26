@@ -1,23 +1,10 @@
-from dataclasses import MISSING
-from dataclasses import field
-from typing import Any
-from typing import Dict
-from typing import Generic
-from typing import Optional
-from typing import List
-from typing import Tuple
-from typing import Type
-from typing import TypeVar
-from typing import cast
+from dataclasses import MISSING, field
+from typing import Any, Dict, Generic, List, Optional, Tuple, Type, TypeVar, cast
 
 from pydantic import BaseModel
-from pydantic.fields import Undefined
-from pydantic.fields import ModelField
-from pydantic.fields import Field
-from xsdata.formats.dataclass.compat import class_types
-from xsdata.formats.dataclass.compat import Dataclasses
+from pydantic.fields import Field, ModelField, Undefined
+from xsdata.formats.dataclass.compat import Dataclasses, class_types
 from xsdata.formats.dataclass.models.elements import XmlType
-
 
 T = TypeVar("T", bound=object)
 
@@ -114,4 +101,4 @@ def _pydantic_field_to_dataclass_field(pydantic_field: ModelField) -> Any:
     return dataclass_field
 
 
-class_types.register("pydantic-base-model", PydanticBaseModel())
+class_types.register("pydantic-basemodel", PydanticBaseModel())
