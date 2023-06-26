@@ -1,4 +1,6 @@
-from typing import Any, Dict, List
+from __future__ import annotations
+
+from typing import Any
 
 from xsdata.codegen.models import Attr, Class
 from xsdata.formats.dataclass.filters import Filters
@@ -19,7 +21,7 @@ class PydanticBaseGenerator(DataclassGenerator):
 
 class PydanticBaseFilters(Filters):
     @classmethod
-    def build_import_patterns(cls) -> Dict[str, Dict]:
+    def build_import_patterns(cls) -> dict[str, dict]:
         patterns = Filters.build_import_patterns()
         patterns.update(
             {"pydantic": {"Field": [" = Field("], "BaseModel": ["BaseModel"]}}
@@ -27,7 +29,7 @@ class PydanticBaseFilters(Filters):
         return {key: patterns[key] for key in sorted(patterns)}
 
     @classmethod
-    def filter_metadata(cls, data: Dict) -> Dict:
+    def filter_metadata(cls, data: dict) -> dict:
         data = super().filter_metadata(data)
         data.pop("min_length", None)
         data.pop("max_length", None)
@@ -63,6 +65,6 @@ class PydanticBaseFilters(Filters):
 
         return f"Field({self.format_arguments(kwargs, 4)})"
 
-    def class_bases(self, obj: Class, class_name: str) -> List[str]:
+    def class_bases(self, obj: Class, class_name: str) -> list[str]:
         # FIXME ... need to dedupe superclasses
         return [*super().class_bases(obj, class_name), "BaseModel"]
