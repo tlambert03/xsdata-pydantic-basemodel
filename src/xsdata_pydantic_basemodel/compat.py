@@ -92,7 +92,7 @@ def _pydantic_field_to_dataclass_field(pydantic_field: ModelField) -> Any:
         # hash=None,
         # compare=True,
         metadata=pydantic_field.field_info.extra.get("metadata", {}),
-        kw_only=MISSING,
+        # kw_only=MISSING,
     )
     dataclass_field.name = pydantic_field.name
     dataclass_field.type = pydantic_field.type_
