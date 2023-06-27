@@ -112,7 +112,7 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
         run: |
-          pip install --upgrade pip mypy
+          pip install --upgrade pip mypy dataclasses-jsonschema
           pip install .[cli,test]
 
       - name: Generate Code
