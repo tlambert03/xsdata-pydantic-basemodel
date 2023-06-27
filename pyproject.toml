@@ -126,7 +126,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.run]
-source = ["src"]
+source = ["xsdata_pydantic_basemodel"]
 
 # https://github.com/mgedmin/check-manifest#configuration
 [tool.check-manifest]
