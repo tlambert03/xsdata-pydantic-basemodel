@@ -101,6 +101,12 @@ jobs:
           ref: master
           submodules: true
           path: xsdata-samples
+      - name: Patch conftest
+        run: |
+          ls
+          sed -i "s|pydantic|pydantic-basemodel|" conftest.py
+        working-directory: ./xsdata-samples
+
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v4
         with:
@@ -109,11 +115,6 @@ jobs:
         run: |
           pip install --upgrade pip mypy
           pip install .[cli,test]
-      - name: Patch conftest
-        run: |
-          ls -la
-          sed -i "" "s|pydantic|pydantic-basemodel|" ./conftest.py
-        working-directory: ./xsdata-samples
 
       - name: Generate Code
         working-directory: ./xsdata-samples
