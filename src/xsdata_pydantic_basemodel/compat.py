@@ -128,7 +128,7 @@ def make_validators(tp: Type, factory: Callable) -> List[Callable]:
     return [validator]
 
 
-if not hasattr(validators, "_VALIDATORS"):
+if hasattr(validators, "_VALIDATORS"):
     validators._VALIDATORS.extend(
         [
             (XmlDate, make_validators(XmlDate, XmlDate.from_string)),
