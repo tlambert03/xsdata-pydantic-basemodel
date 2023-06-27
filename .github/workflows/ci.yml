@@ -68,6 +68,59 @@ jobs:
       - name: Coverage
         uses: codecov/codecov-action@v3
 
+  sample-tests:
+    name: Python ${{ matrix.python }} - ${{ matrix.collection.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.10"]
+        collection:
+          - { name: "Amadeus", id: "amadeus" }
+          - { name: "Autosar", id: "autosar" }
+          - { name: "BPMN", id: "bpmn" }
+          - { name: "Common Types", id: "common_types" }
+          # - { name: "Crossref Metadata", id: "crossref" }
+          - { name: "DateX II", id: "datexii" }
+          # - { name: "DefXML", id: "defxml" }
+          - { name: "EWP", id: "ewp" }
+          - { name: "Generali", id: "generali" }
+          # - { name: "NeTEx", id: "netex" }
+          - { name: "NPO API", id: "npo" }
+          - { name: "ReqIF", id: "reqif" }
+          - { name: "Sabre", id: "sabre" }
+          - { name: "SpaceX", id: "spacex" }
+          - { name: "Travelport", id: "travelport" }
+          - { name: "UBL", id: "ubl" }
+          - { name: "XCBL", id: "xcbl" }
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
+        with:
+          repository: tefra/xsdata-samples
+          ref: master
+          submodules: true
+          path: xsdata-samples
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip mypy
+          pip install .[cli,test]
+      - name: Generate Code
+        working-directory: ./xsdata-samples
+        if: matrix.collection != 'defxml'
+        run: ./run.py build ${{ matrix.collection.id }} --output-format=pydantic-basemodel --unnest-classes
+      - name: Run Tests
+        if: matrix.collection != 'common_types'
+        working-directory: ./xsdata-samples
+        run: ./run.py test ${{ matrix.collection.id }} --output-format=pydantic-basemodel
+      - name: Run mypy
+        working-directory: ./xsdata-samples
+        run: ./run.py mypy ${{ matrix.collection.id }} --output-format=pydantic-basemodel
+
   deploy:
     name: Deploy
     needs: test
