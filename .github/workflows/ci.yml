@@ -109,6 +109,10 @@ jobs:
         run: |
           pip install --upgrade pip mypy
           pip install .[cli,test]
+      - name: Patch conftest
+        run: sed -i "" "s|pydantic|pydantic-basemodel|" conftest.py
+        working-directory: ./xsdata-samples
+
       - name: Generate Code
         working-directory: ./xsdata-samples
         if: matrix.collection != 'defxml'
