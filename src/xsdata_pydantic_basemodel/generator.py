@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import Any
-
 from xsdata.codegen.models import Attr, Class
 from xsdata.formats.dataclass.filters import Filters
 from xsdata.formats.dataclass.generator import DataclassGenerator
 from xsdata.models.config import GeneratorConfig, OutputFormat
+from xsdata.utils.collections import unique_sequence
 from xsdata.utils.text import stop_words
 
 stop_words.update(("schema", "validate"))
@@ -24,16 +23,14 @@ class PydanticBaseFilters(Filters):
     def build_import_patterns(cls) -> dict[str, dict]:
         patterns = Filters.build_import_patterns()
         patterns.update(
-            {"pydantic": {"Field": [" = Field("], "BaseModel": ["BaseModel"]}}
+            {
+                "pydantic": {
+                    "Field": [" = Field("],
+                    "BaseModel": ["BaseModel"],
+                }
+            }
         )
         return {key: patterns[key] for key in sorted(patterns)}
-
-    @classmethod
-    def filter_metadata(cls, data: dict) -> dict:
-        data = super().filter_metadata(data)
-        data.pop("min_length", None)
-        data.pop("max_length", None)
-        return data
 
     @classmethod
     def build_class_annotation(cls, fmt: OutputFormat) -> str:
@@ -41,30 +38,39 @@ class PydanticBaseFilters(Filters):
         return ""
 
     def field_definition(
-        self,
-        attr: Attr,
-        ns_map: dict,
-        parent_namespace: str | None,
-        parents: list[str],
+        self, attr: Attr, ns_map: dict, parent_namespace: str | None, parents: list[str]
     ) -> str:
-        """Return the field definition with any extra metadata."""
-        # updated to use pydantic Field
-        default_value = self.field_default_value(attr, ns_map)
-        metadata = self.field_metadata(attr, parent_namespace, parents)
+        defn = super().field_definition(attr, ns_map, parent_namespace, parents)
+        return defn.replace("field(", "Field(")
 
-        kwargs: dict[str, Any] = {}
-        if attr.fixed or attr.is_prohibited:
-            kwargs["init"] = False
-
-        if default_value is not False and not attr.is_prohibited:
-            key = self.FACTORY_KEY if attr.is_factory else self.DEFAULT_KEY
-            kwargs[key] = default_value
-
-        if metadata:
-            kwargs["metadata"] = metadata
-
-        return f"Field({self.format_arguments(kwargs, 4)})"
+    def format_arguments(self, kwargs: dict, indent: int = 0) -> str:
+        # called by field_definition
+        self.move_metadata_to_pydantic_field(kwargs, pop=True)
+        return super().format_arguments(kwargs, indent)
 
     def class_bases(self, obj: Class, class_name: str) -> list[str]:
+        # add BaseModel to the class bases
         # FIXME ... need to dedupe superclasses
-        return [*super().class_bases(obj, class_name), "BaseModel"]
+        bases = super().class_bases(obj, class_name)
+        return unique_sequence([*bases, "BaseModel"])
+
+    def move_metadata_to_pydantic_field(self, kwargs: dict, pop: bool = True) -> None:
+        """Move metadata from the metadata dict to the pydantic Field kwargs."""
+        if "metadata" not in kwargs:
+            return
+
+        metadata: dict = kwargs["metadata"]
+        getitem = metadata.pop if pop else metadata.get
+        for from_, to_ in [
+            ("min_inclusive", "ge"),
+            ("min_exclusive", "gt"),
+            ("max_inclusive", "le"),
+            ("max_exclusive", "lt"),
+            ("min_occurs", "min_items"),
+            ("max_occurs", "max_items"),
+            ("pattern", "regex"),
+            ("min_length", "min_length"),
+            ("max_length", "max_length"),
+        ]:
+            if from_ in metadata:
+                kwargs[to_] = getitem(from_)
