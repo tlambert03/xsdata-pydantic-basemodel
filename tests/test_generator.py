@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import pytest
 from click.testing import CliRunner
 from xsdata.cli import cli
 from xsdata.models.config import GeneratorConfig
@@ -65,6 +66,7 @@ class ClassC(BaseModel):
 """
 
 
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 class PydanticBaseGeneratorTests(FactoryTestCase):
     def setUp(self):
         super().setUp()
