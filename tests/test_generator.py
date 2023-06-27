@@ -25,7 +25,8 @@ class ClassB(BaseModel):
             "name": "attr_B",
             "type": "Element",
             "max_occurs": 3,
-        }
+        },
+        max_items=3
     )
     attr_c: Optional[str] = Field(
         default=None,

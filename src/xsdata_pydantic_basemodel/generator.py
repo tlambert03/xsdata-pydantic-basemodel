@@ -45,7 +45,7 @@ class PydanticBaseFilters(Filters):
 
     def format_arguments(self, kwargs: dict, indent: int = 0) -> str:
         # called by field_definition
-        self.move_metadata_to_pydantic_field(kwargs, pop=True)
+        self.move_metadata_to_pydantic_field(kwargs)
         return super().format_arguments(kwargs, indent)
 
     def class_bases(self, obj: Class, class_name: str) -> list[str]:
@@ -54,9 +54,10 @@ class PydanticBaseFilters(Filters):
         bases = super().class_bases(obj, class_name)
         return unique_sequence([*bases, "BaseModel"])
 
-    def move_metadata_to_pydantic_field(self, kwargs: dict, pop: bool = True) -> None:
+    def move_metadata_to_pydantic_field(self, kwargs: dict, pop: bool = False) -> None:
         """Move metadata from the metadata dict to the pydantic Field kwargs."""
-        if "metadata" not in kwargs:
+        # XXX: can we pop them?  or does xsdata need them in the metdata dict as well?
+        if "metadata" not in kwargs:  # pragma: no cover
             return
 
         metadata: dict = kwargs["metadata"]
