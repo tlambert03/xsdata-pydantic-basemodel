@@ -102,9 +102,8 @@ jobs:
           submodules: true
           path: xsdata-samples
       - name: Patch conftest
-        run: |
-          ls
-          sed -i "s|pydantic|pydantic-basemodel|" conftest.py
+        # add pydantic-basemodel to the conftest.py
+        run: sed -i "s|pydantic|pydantic-basemodel|" conftest.py
         working-directory: ./xsdata-samples
 
       - name: Set up Python ${{ matrix.python }}
