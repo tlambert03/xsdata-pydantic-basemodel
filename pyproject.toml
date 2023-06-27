@@ -8,7 +8,7 @@ build-backend = "hatchling.build"
 name = "xsdata-pydantic-basemodel"
 description = "xsdata pydantic plugin using BaseModel"
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = { text = "BSD 3-Clause License" }
 authors = [
     { email = "talley.lambert@gmail.com", name = "Talley Lambert" },
@@ -21,7 +21,6 @@ classifiers = [
     "License :: OSI Approved :: BSD License",
     "Natural Language :: English",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -81,7 +80,7 @@ sources = ["src"]
 # https://github.com/charliermarsh/ruff
 [tool.ruff]
 line-length = 88
-target-version = "py37"
+target-version = "py38"
 src = ["src"]
 select = [
     "E",    # style errors
