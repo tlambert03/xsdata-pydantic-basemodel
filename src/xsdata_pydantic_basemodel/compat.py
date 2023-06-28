@@ -1,10 +1,23 @@
 from dataclasses import MISSING, field
-from typing import Any, Dict, Generic, List, Optional, Tuple, Type, TypeVar, cast
+from typing import (
+    Any,
+    Callable,
+    Dict,
+    Generic,
+    List,
+    Optional,
+    Tuple,
+    Type,
+    TypeVar,
+    cast,
+)
+from xml.etree.ElementTree import QName
 
-from pydantic import BaseModel
+from pydantic import BaseModel, validators
 from pydantic.fields import Field, ModelField, Undefined
 from xsdata.formats.dataclass.compat import Dataclasses, class_types
 from xsdata.formats.dataclass.models.elements import XmlType
+from xsdata.models.datatype import XmlDate, XmlDateTime, XmlDuration, XmlPeriod, XmlTime
 
 T = TypeVar("T", bound=object)
 
@@ -100,3 +113,37 @@ def _pydantic_field_to_dataclass_field(pydantic_field: ModelField) -> Any:
 
 
 class_types.register("pydantic-basemodel", PydanticBaseModel())
+
+
+def make_validators(tp: Type, factory: Callable) -> List[Callable]:
+    def validator(value: Any) -> Any:
+        if isinstance(value, tp):
+            return value
+
+        if isinstance(value, str):
+            return factory(value)
+
+        raise ValueError
+
+    return [validator]
+
+
+if hasattr(validators, "_VALIDATORS"):
+    validators._VALIDATORS.extend(
+        [
+            (XmlDate, make_validators(XmlDate, XmlDate.from_string)),
+            (XmlDateTime, make_validators(XmlDateTime, XmlDateTime.from_string)),
+            (XmlTime, make_validators(XmlTime, XmlTime.from_string)),
+            (XmlDuration, make_validators(XmlDuration, XmlDuration)),
+            (XmlPeriod, make_validators(XmlPeriod, XmlPeriod)),
+            (QName, make_validators(QName, QName)),
+        ]
+    )
+else:  # pragma: no cover
+    import warnings
+
+    warnings.warn(
+        "Could not find pydantic.validators._VALIDATORS."
+        "xsdata-pydantic-basemodel may be incompatible with your pydantic version.",
+        stacklevel=2,
+    )
