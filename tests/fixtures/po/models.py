@@ -31,8 +31,7 @@ class Items(BaseModel):
                 "namespace": "foo",
                 "required": True,
                 "max_exclusive": 100,
-            },
-            lt=100,
+            }
         )
         usprice: Decimal = Field(
             metadata={
