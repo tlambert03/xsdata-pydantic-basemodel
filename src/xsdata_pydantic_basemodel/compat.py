@@ -139,7 +139,7 @@ if hasattr(validators, "_VALIDATORS"):
             (QName, make_validators(QName, QName)),
         ]
     )
-else:
+else:  # pragma: no cover
     import warnings
 
     warnings.warn(
