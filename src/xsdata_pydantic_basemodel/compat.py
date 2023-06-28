@@ -145,5 +145,5 @@ else:
     warnings.warn(
         "Could not find pydantic.validators._VALIDATORS."
         "xsdata-pydantic-basemodel may be incompatible with your pydantic version.",
-        stacklevel=2
+        stacklevel=2,
     )
