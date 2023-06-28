@@ -77,7 +77,11 @@ jobs:
         python: ["3.10"]
         collection:
           - { name: "Amadeus", id: "amadeus" }
-          - { name: "Autosar", id: "autosar" }
+          # Autosar uses a class named RuntimeError, with a subclass
+          # named RuntimeError.ShortNameFragments ... which wreaks havoc
+          # on pydantic's handling of forward refs.  You get an attribute
+          # error instead of a NameError ... so the class construction fails
+          # - { name: "Autosar", id: "autosar" }
           - { name: "BPMN", id: "bpmn" }
           - { name: "Common Types", id: "common_types" }
           # - { name: "Crossref Metadata", id: "crossref" }
