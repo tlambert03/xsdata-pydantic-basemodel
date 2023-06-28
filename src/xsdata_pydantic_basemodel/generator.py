@@ -63,15 +63,15 @@ class PydanticBaseFilters(Filters):
         metadata: dict = kwargs["metadata"]
         getitem = metadata.pop if pop else metadata.get
         for from_, to_ in [
-            ("min_inclusive", "ge"),
-            ("min_exclusive", "gt"),
-            ("max_inclusive", "le"),
-            ("max_exclusive", "lt"),
-            ("min_occurs", "min_items"),
-            ("max_occurs", "max_items"),
+            # ("min_inclusive", "ge"),
+            # ("min_exclusive", "gt"),
+            # ("max_inclusive", "le"),
+            # ("max_exclusive", "lt"),
+            # ("min_length", "min_length"),
+            # ("max_length", "max_length"),
+            # ("min_occurs", "min_items"),
+            # ("max_occurs", "max_items"),
             ("pattern", "regex"),
-            ("min_length", "min_length"),
-            ("max_length", "max_length"),
         ]:
             if from_ in metadata:
                 kwargs[to_] = getitem(from_)

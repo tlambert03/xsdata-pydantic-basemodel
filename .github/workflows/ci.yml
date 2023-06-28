@@ -89,6 +89,8 @@ jobs:
           - { name: "NPO API", id: "npo" }
           - { name: "ReqIF", id: "reqif" }
           - { name: "Sabre", id: "sabre" }
+          # For spacex, the derived model has a lot of seemingly
+          # incorrect "min_occurs": 1, items
           - { name: "SpaceX", id: "spacex" }
           - { name: "Travelport", id: "travelport" }
           - { name: "UBL", id: "ubl" }
