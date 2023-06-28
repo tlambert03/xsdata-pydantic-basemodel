@@ -103,10 +103,6 @@ jobs:
           ref: master
           submodules: true
           path: xsdata-samples
-      - name: Patch conftest
-        # add pydantic-basemodel to the conftest.py
-        run: sed -i "s|pydantic|pydantic-basemodel|" conftest.py
-        working-directory: ./xsdata-samples
 
       - name: Set up Python ${{ matrix.python }}
         uses: actions/setup-python@v4
@@ -114,8 +110,14 @@ jobs:
           python-version: ${{ matrix.python }}
       - name: Install dependencies
         run: |
-          pip install --upgrade pip mypy dataclasses-jsonschema
+          pip install --upgrade pip
           pip install .[cli,test]
+      - name: Patch conftest and install dependencies
+        # add pydantic-basemodel to the conftest.py
+        run: |
+          sed -i "s|pydantic|pydantic-basemodel|" conftest.py
+          pip install -r requirements.txt
+        working-directory: ./xsdata-samples
 
       - name: Generate Code
         working-directory: ./xsdata-samples
