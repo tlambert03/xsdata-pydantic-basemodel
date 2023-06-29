@@ -62,8 +62,7 @@ class Items(BaseModel):
                 "type": "Attribute",
                 "required": True,
                 "pattern": r"\d{3}-[A-Z]{2}",
-            },
-            regex="\\d{3}-[A-Z]{2}",
+            }
         )
 
 
