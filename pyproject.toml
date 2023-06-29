@@ -113,6 +113,9 @@ disallow_subclassing_any = false
 show_error_codes = true
 pretty = true
 
+[[tool.mypy.overrides]]
+module = ["xsdata_pydantic_basemodel._pydantic_compat"]
+ignore_errors = true
 
 # https://coverage.readthedocs.io/en/6.4/config.html
 [tool.coverage.report]

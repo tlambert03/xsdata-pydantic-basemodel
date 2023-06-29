@@ -26,6 +26,10 @@ jobs:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
         platform: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - python-version: "3.10"
+            platform: ubuntu-latest
+            pydantic_pre: true
 
     steps:
       - name: Cancel Previous Runs
@@ -48,6 +52,11 @@ jobs:
           python -m pip install -U pip
           python -m pip install .[test] ${{ github.event_name == 'schedule' && '--pre' || ''  }}
 
+      - name: Maybe update pydantic
+        if: matrix.pydantic_pre
+        run: |
+          python -m pip install -U --pre pydantic
+
       - name: Test
         run: pytest --color=yes --cov --cov-report=xml --cov-report=term-missing
 
@@ -69,12 +78,13 @@ jobs:
         uses: codecov/codecov-action@v3
 
   sample-tests:
-    name: Python ${{ matrix.python }} - ${{ matrix.collection.name }}
+    name: ${{ matrix.collection.name }} py-0${{ matrix.python }} pydantic2-${{ matrix.pydantic_pre }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         python: ["3.10"]
+        pydantic_pre: [true, false]
         collection:
           - { name: "Amadeus", id: "amadeus" }
           # Autosar uses a class named RuntimeError, with a subclass
@@ -99,6 +109,7 @@ jobs:
           - { name: "Travelport", id: "travelport" }
           - { name: "UBL", id: "ubl" }
           - { name: "XCBL", id: "xcbl" }
+
     steps:
       - uses: actions/checkout@v3
       - uses: actions/checkout@v3
@@ -122,6 +133,11 @@ jobs:
           sed -i "s|pydantic|pydantic-basemodel|" conftest.py
           pip install -r requirements.txt
         working-directory: ./xsdata-samples
+
+      - name: Maybe update pydantic
+        if: matrix.pydantic_pre
+        run: |
+          python -m pip install -U --pre pydantic
 
       - name: Generate Code
         working-directory: ./xsdata-samples

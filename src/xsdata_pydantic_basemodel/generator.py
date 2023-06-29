@@ -7,6 +7,8 @@ from xsdata.models.config import GeneratorConfig, OutputFormat
 from xsdata.utils.collections import unique_sequence
 from xsdata.utils.text import stop_words
 
+from ._pydantic_compat import PYDANTIC2
+
 stop_words.update(("schema", "validate"))
 
 
@@ -71,7 +73,10 @@ class PydanticBaseFilters(Filters):
             # ("max_length", "max_length"),
             # ("min_occurs", "min_items"),
             # ("max_occurs", "max_items"),
-            ("pattern", "regex"),
+            ("pattern", "pattern" if PYDANTIC2 else "regex"),
         ]:
             if from_ in metadata:
                 kwargs[to_] = getitem(from_)
+
+        if PYDANTIC2 and "metadata" in kwargs:
+            kwargs["json_schema_extra"] = kwargs.pop("metadata")
