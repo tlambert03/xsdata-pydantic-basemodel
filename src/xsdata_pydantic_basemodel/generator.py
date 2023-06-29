@@ -77,3 +77,6 @@ class PydanticBaseFilters(Filters):
         ]:
             if from_ in metadata:
                 kwargs[to_] = getitem(from_)
+
+        if PYDANTIC2 and "metadata" in kwargs:
+            kwargs["json_schema_extra"] = kwargs.pop("metadata")
