@@ -1,7 +1,9 @@
 from datetime import datetime
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+
+from xsdata_pydantic_basemodel._pydantic_compat import Field
 
 
 class TypeA(BaseModel):

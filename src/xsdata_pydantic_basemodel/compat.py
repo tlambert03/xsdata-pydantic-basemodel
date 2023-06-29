@@ -1,5 +1,5 @@
-from dataclasses import MISSING, field
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -9,17 +9,40 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
-    cast,
 )
 from xml.etree.ElementTree import QName
 
 from pydantic import BaseModel, validators
-from pydantic.fields import Field, ModelField, Undefined
 from xsdata.formats.dataclass.compat import Dataclasses, class_types
 from xsdata.formats.dataclass.models.elements import XmlType
 from xsdata.models.datatype import XmlDate, XmlDateTime, XmlDuration, XmlPeriod, XmlTime
 
+from ._pydantic_compat import (
+    PYDANTIC2,
+    Field,
+    dataclass_fields,
+    model_config,
+    update_forward_refs,
+)
+
+if TYPE_CHECKING:
+    pass
+
 T = TypeVar("T", bound=object)
+
+
+# don't switch to exclude ... it makes it hard to add fields to the
+# schema without breaking backwards compatibility
+_config = model_config(arbitrary_types_allowed=True)
+
+
+class _BaseModel(BaseModel):
+    """Base model for all types."""
+
+    if PYDANTIC2:
+        model_config = _config
+    else:
+        Config = _config  # type: ignore
 
 
 class AnyElement(BaseModel):
@@ -42,8 +65,10 @@ class AnyElement(BaseModel):
         default_factory=dict, metadata={"type": XmlType.ATTRIBUTES}
     )
 
-    class Config:
-        arbitrary_types_allowed = True
+    if PYDANTIC2:
+        model_config = _config
+    else:
+        Config = _config  # type: ignore
 
 
 class DerivedElement(BaseModel, Generic[T]):
@@ -60,8 +85,10 @@ class DerivedElement(BaseModel, Generic[T]):
     value: T
     type: Optional[str] = None
 
-    class Config:
-        arbitrary_types_allowed = True
+    if PYDANTIC2:
+        model_config = _config
+    else:
+        Config = _config  # type: ignore
 
 
 class PydanticBaseModel(Dataclasses):
@@ -76,40 +103,13 @@ class PydanticBaseModel(Dataclasses):
     def is_model(self, obj: Any) -> bool:
         clazz = obj if isinstance(obj, type) else type(obj)
         if issubclass(clazz, BaseModel):
-            clazz.update_forward_refs()
+            update_forward_refs(clazz)
             return True
 
         return False
 
     def get_fields(self, obj: Any) -> Tuple[Any, ...]:
-        _fields = cast("BaseModel", obj).__fields__.values()
-        return tuple(_pydantic_field_to_dataclass_field(field) for field in _fields)
-
-
-def _pydantic_field_to_dataclass_field(pydantic_field: ModelField) -> Any:
-    if pydantic_field.default_factory is not None:
-        default_factory: Any = pydantic_field.default_factory
-        default = MISSING
-    else:
-        default_factory = MISSING
-        default = (
-            MISSING
-            if pydantic_field.default in (Undefined, Ellipsis)
-            else pydantic_field.default
-        )
-
-    dataclass_field = field(  # type: ignore
-        default=default,
-        default_factory=default_factory,
-        # init=True,
-        # hash=None,
-        # compare=True,
-        metadata=pydantic_field.field_info.extra.get("metadata", {}),
-        # kw_only=MISSING,
-    )
-    dataclass_field.name = pydantic_field.name
-    dataclass_field.type = pydantic_field.type_
-    return dataclass_field
+        return tuple(dataclass_fields(obj))
 
 
 class_types.register("pydantic-basemodel", PydanticBaseModel())
@@ -140,10 +140,10 @@ if hasattr(validators, "_VALIDATORS"):
         ]
     )
 else:  # pragma: no cover
-    import warnings
+    pass
 
-    warnings.warn(
-        "Could not find pydantic.validators._VALIDATORS."
-        "xsdata-pydantic-basemodel may be incompatible with your pydantic version.",
-        stacklevel=2,
-    )
+    # warnings.warn(
+    #     "Could not find pydantic.validators._VALIDATORS."
+    #     "xsdata-pydantic-basemodel may be incompatible with your pydantic version.",
+    #     stacklevel=2,
+    # )
