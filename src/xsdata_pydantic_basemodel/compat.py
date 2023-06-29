@@ -122,25 +122,35 @@ def make_validators(tp: Type, factory: Callable) -> List[Callable]:
 
         if isinstance(value, str):
             return factory(value)
-
+        breakpoint()
         raise ValueError
 
     return [validator]
 
 
+_validators = {
+    XmlDate: make_validators(XmlDate, XmlDate.from_string),
+    XmlDateTime: make_validators(XmlDateTime, XmlDateTime.from_string),
+    XmlTime: make_validators(XmlTime, XmlTime.from_string),
+    XmlDuration: make_validators(XmlDuration, XmlDuration),
+    XmlPeriod: make_validators(XmlPeriod, XmlPeriod),
+    QName: make_validators(QName, QName),
+}
+
 if hasattr(validators, "_VALIDATORS"):
-    validators._VALIDATORS.extend(
-        [
-            (XmlDate, make_validators(XmlDate, XmlDate.from_string)),
-            (XmlDateTime, make_validators(XmlDateTime, XmlDateTime.from_string)),
-            (XmlTime, make_validators(XmlTime, XmlTime.from_string)),
-            (XmlDuration, make_validators(XmlDuration, XmlDuration)),
-            (XmlPeriod, make_validators(XmlPeriod, XmlPeriod)),
-            (QName, make_validators(QName, QName)),
-        ]
-    )
+    validators._VALIDATORS.extend(list(_validators.items()))
 else:  # pragma: no cover
-    pass
+    from pydantic import BaseModel
+    from pydantic_core import core_schema as cs
+
+    def _make_get_core_schema(validator):
+        def get_core_schema(source_type, handler):
+            return cs.general_plain_validator_function(validator)
+
+        return get_core_schema
+
+    for type_, val in _validators.items():
+        type_.__get_pydantic_core_schema__ = _make_get_core_schema(val[0])
 
     # warnings.warn(
     #     "Could not find pydantic.validators._VALIDATORS."

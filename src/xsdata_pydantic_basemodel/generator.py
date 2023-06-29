@@ -71,7 +71,7 @@ class PydanticBaseFilters(Filters):
             # ("max_length", "max_length"),
             # ("min_occurs", "min_items"),
             # ("max_occurs", "max_items"),
-            ("pattern", "regex"),
+            # ("pattern", "pattern" if PYDANTIC2 else "regex"),
         ]:
             if from_ in metadata:
                 kwargs[to_] = getitem(from_)
