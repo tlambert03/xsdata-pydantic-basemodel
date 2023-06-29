@@ -143,14 +143,15 @@ else:  # pragma: no cover
     from pydantic import BaseModel
     from pydantic_core import core_schema as cs
 
-    def _make_get_core_schema(validator):
-        def get_core_schema(source_type, handler):
+    def _make_get_core_schema(validator: Callable) -> Callable:
+        def get_core_schema(*args: Any) -> cs.PlainValidatorFunctionSchema:
             return cs.general_plain_validator_function(validator)
 
         return get_core_schema
 
     for type_, val in _validators.items():
-        type_.__get_pydantic_core_schema__ = _make_get_core_schema(val[0])
+        get_schema = _make_get_core_schema(val[0])
+        type_.__get_pydantic_core_schema__ = get_schema  # type: ignore
 
     # warnings.warn(
     #     "Could not find pydantic.validators._VALIDATORS."

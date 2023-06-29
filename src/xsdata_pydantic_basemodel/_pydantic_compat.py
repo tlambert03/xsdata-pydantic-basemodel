@@ -53,6 +53,7 @@ if PYDANTIC2:
         return kwargs
 
 else:
+    from pydantic.fields import Field as Field  # noqa
     from pydantic.fields import ModelField
     from pydantic.fields import Undefined as Undefined
 
