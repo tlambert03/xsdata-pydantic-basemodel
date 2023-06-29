@@ -137,9 +137,9 @@ _validators = {
     QName: make_validators(QName, QName),
 }
 
-if hasattr(validators, "_VALIDATORS"):
+if not PYDANTIC2:
     validators._VALIDATORS.extend(list(_validators.items()))
-else:  # pragma: no cover
+else:
     from pydantic import BaseModel
     from pydantic_core import core_schema as cs
 
@@ -152,9 +152,3 @@ else:  # pragma: no cover
     for type_, val in _validators.items():
         get_schema = _make_get_core_schema(val[0])
         type_.__get_pydantic_core_schema__ = get_schema  # type: ignore
-
-    # warnings.warn(
-    #     "Could not find pydantic.validators._VALIDATORS."
-    #     "xsdata-pydantic-basemodel may be incompatible with your pydantic version.",
-    #     stacklevel=2,
-    # )
